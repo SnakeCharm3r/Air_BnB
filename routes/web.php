@@ -7,6 +7,7 @@ use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\RoomController;
 use App\Http\Controllers\Web\RoomTypeController;
 use App\Http\Controllers\Web\BookingController;
+use App\Http\Controllers\Web\StaffController;
 use App\Http\Controllers\SettingController;
 
 /*
@@ -52,12 +53,14 @@ Route::middleware(['auth'])->group(function () {
     })->name('billing');
     
     // Staff
-    Route::get('/staff', function () {
-        return view('staff.index');
-    })->name('staff');
-    Route::get('/staff/{id}', function ($id) {
-        return view('staff.show', compact('id'));
-    })->name('staff.show');
+    Route::get('/staff', [StaffController::class, 'index'])->name('staff.index');
+    Route::get('/staff/create', [StaffController::class, 'create'])->name('staff.create');
+    Route::post('/staff', [StaffController::class, 'store'])->name('staff.store');
+    Route::get('/staff/{id}', [StaffController::class, 'show'])->name('staff.show');
+    Route::get('/staff/{id}/edit', [StaffController::class, 'edit'])->name('staff.edit');
+    Route::put('/staff/{id}', [StaffController::class, 'update'])->name('staff.update');
+    Route::delete('/staff/{id}', [StaffController::class, 'destroy'])->name('staff.destroy');
+    Route::get('/staff/{id}/attendance', [StaffController::class, 'attendance'])->name('staff.attendance');
     
     // Tasks
     Route::get('/tasks', function () {

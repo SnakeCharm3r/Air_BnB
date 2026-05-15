@@ -4,7 +4,7 @@ $navItems = [
     ['route' => 'web.rooms', 'icon' => 'rooms', 'label' => 'Rooms'],
     ['route' => 'bookings', 'icon' => 'bookings', 'label' => 'Bookings'],
     ['route' => 'billing', 'icon' => 'billing', 'label' => 'Billing'],
-    ['route' => 'staff', 'icon' => 'staff', 'label' => 'Staff'],
+    ['route' => 'staff.index', 'icon' => 'staff', 'label' => 'Staff'],
     ['route' => 'tasks', 'icon' => 'tasks', 'label' => 'My Tasks'],
     ['route' => 'inventory', 'icon' => 'inventory', 'label' => 'Inventory'],
     ['route' => 'costs', 'icon' => 'costs', 'label' => 'Costs'],

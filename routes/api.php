@@ -8,7 +8,6 @@ use App\Http\Controllers\InfrastructureController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\RoomController;
-use App\Http\Controllers\StaffController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -44,10 +43,6 @@ Route::middleware('auth.api')->group(function () {
     Route::post('/bookings/{booking}/checkin', [BookingController::class, 'checkIn']);
     Route::post('/bookings/{booking}/checkout', [BookingController::class, 'checkOut']);
     Route::apiResource('bookings', BookingController::class);
-
-    // Staff
-    Route::get('/staff/{staff}/attendance', [StaffController::class, 'attendance']);
-    Route::apiResource('staff', StaffController::class);
 
     // Inventory
     Route::apiResource('inventory', InventoryController::class);

@@ -3,15 +3,15 @@ $navItems = [
     ['route' => 'dashboard', 'icon' => 'dashboard', 'label' => 'Dashboard'],
     ['route' => 'web.rooms', 'icon' => 'rooms', 'label' => 'Rooms'],
     ['route' => 'bookings', 'icon' => 'bookings', 'label' => 'Bookings'],
-    ['route' => 'billing', 'icon' => 'billing', 'label' => 'Billing'],
+    ['route' => 'billing.index', 'icon' => 'billing', 'label' => 'Billing'],
     ['route' => 'staff.index', 'icon' => 'staff', 'label' => 'Staff'],
-    ['route' => 'tasks', 'icon' => 'tasks', 'label' => 'My Tasks'],
-    ['route' => 'inventory', 'icon' => 'inventory', 'label' => 'Inventory'],
-    ['route' => 'costs', 'icon' => 'costs', 'label' => 'Costs'],
-    ['route' => 'reports', 'icon' => 'reports', 'label' => 'Reports'],
-    ['route' => 'maintenance', 'icon' => 'maintenance', 'label' => 'Maintenance'],
-    ['route' => 'infrastructure', 'icon' => 'infrastructure', 'label' => 'Infrastructure'],
-    ['route' => 'users', 'icon' => 'users', 'label' => 'User Management'],
+    ['route' => 'tasks.index', 'icon' => 'tasks', 'label' => 'My Tasks'],
+    ['route' => 'inventory.index', 'icon' => 'inventory', 'label' => 'Inventory'],
+    ['route' => 'costs.index', 'icon' => 'costs', 'label' => 'Costs'],
+    ['route' => 'reports.index', 'icon' => 'reports', 'label' => 'Reports'],
+    ['route' => 'maintenance.index', 'icon' => 'maintenance', 'label' => 'Maintenance'],
+    ['route' => 'infrastructure.index', 'icon' => 'infrastructure', 'label' => 'Infrastructure'],
+    ['route' => 'users.index', 'icon' => 'users', 'label' => 'User Management'],
 ];
 @endphp
 

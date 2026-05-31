@@ -142,11 +142,64 @@ class BookingController extends Controller
             $invoice = DB::table('invoices')->where('booking_id', $bookingId)->first();
         }
 
+        // Get LIVE payment data - sum of all payments for this booking
+        $totalPaid = DB::table('payments')
+            ->where('booking_id', $bookingId)
+            ->sum('amount');
+
+        // Calculate current balance from LIVE data
+        $currentBalanceDue = max(0, $booking->total_amount - $totalPaid);
+        
+        // Determine current status based on payment
+        $currentStatus = 'pending';
+        if ($currentBalanceDue <= 0) {
+            $currentStatus = 'paid';
+        } elseif ($totalPaid > 0) {
+            $currentStatus = 'partial';
+        }
+
+        // Build updated invoice data object with LIVE values
+        $invoiceData = (object)[
+            'id' => $invoice->id ?? null,
+            'booking_id' => $bookingId,
+            'invoice_number' => $invoice->invoice_number ?? ('INV-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -4))),
+            'guest_name' => $booking->guest_name,
+            'room_number' => $booking->room_number,
+            'room_type_name' => $booking->room_type_name,
+            'check_in_date' => $booking->check_in_date,
+            'check_out_date' => $booking->check_out_date,
+            'nights' => $invoice->nights ?? 1,
+            'room_rate' => $invoice->room_rate ?? $booking->total_amount,
+            'subtotal' => $booking->total_amount / 1.12, // Remove tax
+            'tax_amount' => $booking->total_amount - ($booking->total_amount / 1.12),
+            'total_amount' => $booking->total_amount,
+            'amount_paid' => $totalPaid,
+            'balance_due' => $currentBalanceDue,
+            'status' => $currentStatus,
+            'payment_type' => $booking->payment_type,
+            'payment_reference' => $booking->payment_reference,
+            'created_at' => $invoice->created_at ?? now(),
+            'updated_at' => now(),
+            'printed_at' => $invoice->printed_at ?? null,
+        ];
+
+        // Update the invoices table with current data
+        if ($invoice) {
+            DB::table('invoices')->where('id', $invoice->id)->update([
+                'amount_paid' => $totalPaid,
+                'balance_due' => $currentBalanceDue,
+                'status' => $currentStatus,
+                'updated_at' => now(),
+            ]);
+        }
+
         // Get lodge settings
         $settingsRow = DB::table('settings')->first();
         $settings = $settingsRow ? (array)$settingsRow : [];
 
-        return view('bookings.invoice', compact('booking', 'invoice', 'settings'));
+        return view('bookings.invoice', compact('booking', 'invoice'))
+            ->with('invoice', $invoiceData)
+            ->with('settings', $settings);
     }
 
     public function printInvoice($bookingId)
@@ -163,15 +216,64 @@ class BookingController extends Controller
         }
 
         $invoice = DB::table('invoices')->where('booking_id', $bookingId)->first();
+
+        // Get LIVE payment data
+        $totalPaid = DB::table('payments')
+            ->where('booking_id', $bookingId)
+            ->sum('amount');
+
+        // Calculate current balance from LIVE data
+        $currentBalanceDue = max(0, $booking->total_amount - $totalPaid);
+        
+        // Determine current status based on payment
+        $currentStatus = 'pending';
+        if ($currentBalanceDue <= 0) {
+            $currentStatus = 'paid';
+        } elseif ($totalPaid > 0) {
+            $currentStatus = 'partial';
+        }
+
+        // Build updated invoice data object with LIVE values
+        $invoiceData = (object)[
+            'id' => $invoice->id ?? null,
+            'booking_id' => $bookingId,
+            'invoice_number' => $invoice->invoice_number ?? ('INV-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -4))),
+            'guest_name' => $booking->guest_name,
+            'room_number' => $booking->room_number,
+            'room_type_name' => $booking->room_type_name,
+            'check_in_date' => $booking->check_in_date,
+            'check_out_date' => $booking->check_out_date,
+            'nights' => $invoice->nights ?? 1,
+            'room_rate' => $invoice->room_rate ?? $booking->total_amount,
+            'subtotal' => $booking->total_amount / 1.12,
+            'tax_amount' => $booking->total_amount - ($booking->total_amount / 1.12),
+            'total_amount' => $booking->total_amount,
+            'amount_paid' => $totalPaid,
+            'balance_due' => $currentBalanceDue,
+            'status' => $currentStatus,
+            'payment_type' => $booking->payment_type,
+            'payment_reference' => $booking->payment_reference,
+            'created_at' => $invoice->created_at ?? now(),
+            'printed_at' => now(),
+        ];
+
+        // Update invoices table and mark as printed
+        if ($invoice) {
+            DB::table('invoices')->where('id', $invoice->id)->update([
+                'amount_paid' => $totalPaid,
+                'balance_due' => $currentBalanceDue,
+                'status' => $currentStatus,
+                'printed_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
         $settingsRow = DB::table('settings')->first();
         $settings = $settingsRow ? (array)$settingsRow : [];
 
-        // Mark as printed
-        if ($invoice) {
-            DB::table('invoices')->where('id', $invoice->id)->update(['printed_at' => now()]);
-        }
-
-        return view('bookings.invoice-print', compact('booking', 'invoice', 'settings'));
+        return view('bookings.invoice-print', compact('booking'))
+            ->with('invoice', $invoiceData)
+            ->with('settings', $settings);
     }
 
     public function show($id)
@@ -367,6 +469,12 @@ class BookingController extends Controller
         // Room goes to awaiting cleaning instead of available
         DB::table('rooms')->where('id', $booking->room_id)->update(['status' => 'awaiting_cleaning']);
 
-        return redirect()->route('bookings.show', $id)->with('success', 'Guest checked out successfully');
+        // If there's a balance due, redirect to billing with notification
+        if ($booking->balance_due > 0) {
+            return redirect()->route('billing.show', $id)
+                ->with('warning', 'Guest checked out successfully. Outstanding balance of $' . number_format($booking->balance_due, 2) . ' requires payment.');
+        }
+
+        return redirect()->route('bookings.show', $id)->with('success', 'Guest checked out successfully. No outstanding balance.');
     }
 }

@@ -34,14 +34,20 @@
             <div class="flex items-start justify-between mb-8">
                 <!-- Company Info -->
                 <div class="flex items-start gap-4">
-                    <!-- Logo Placeholder -->
-                    <div class="w-24 h-24 bg-slate-100 rounded-lg flex items-center justify-center border border-slate-200">
-                        <div class="text-center">
-                            <svg class="w-8 h-8 text-slate-400 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                            </svg>
-                            <p class="text-xs text-slate-400">Upload Logo</p>
-                        </div>
+                    <!-- Logo -->
+                    <div class="w-24 h-24 bg-slate-100 rounded-lg flex items-center justify-center border border-slate-200 overflow-hidden">
+                        @if(!empty($settings['lodge_logo']) && file_exists(storage_path('app/public/' . $settings['lodge_logo'])))
+                            <img src="{{ asset('storage/' . $settings['lodge_logo']) }}" alt="{{ $settings['lodge_name'] ?? 'Lodge' }}" class="w-full h-full object-cover">
+                        @elseif(!empty($settings['lodge_logo']) && file_exists(public_path($settings['lodge_logo'])))
+                            <img src="{{ asset($settings['lodge_logo']) }}" alt="{{ $settings['lodge_name'] ?? 'Lodge' }}" class="w-full h-full object-cover">
+                        @else
+                            <div class="text-center">
+                                <svg class="w-8 h-8 text-slate-400 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                                <p class="text-xs text-slate-400">No Logo</p>
+                            </div>
+                        @endif
                     </div>
                     <div>
                         <h1 class="text-xl font-bold text-slate-800">{{ $settings['lodge_name'] ?? 'Milano Lodge' }}</h1>

@@ -9,8 +9,13 @@
         @media print {
             body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             .no-print { display: none !important; }
+            /* Hide browser URL and page numbers in print */
+            @page { margin: 0; }
+            body { margin: 1cm; }
         }
         @page { size: A4; margin: 1cm; }
+        /* Hide browser default headers/footers */
+        @page :first { margin-top: 0; }
     </style>
 </head>
 <body class="bg-white min-h-screen">
@@ -26,10 +31,16 @@
         <div class="flex items-start justify-between mb-8 border-b-2 border-slate-800 pb-6">
             <div class="flex items-center gap-4">
                 <!-- Logo -->
-                <div class="w-24 h-24 bg-amber-100 rounded-lg flex items-center justify-center border border-amber-200">
-                    <svg class="w-12 h-12 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                    </svg>
+                <div class="w-24 h-24 bg-amber-100 rounded-lg flex items-center justify-center border border-amber-200 overflow-hidden">
+                    @if(!empty($settings['lodge_logo']) && file_exists(storage_path('app/public/' . $settings['lodge_logo'])))
+                        <img src="{{ asset('storage/' . $settings['lodge_logo']) }}" alt="{{ $settings['lodge_name'] ?? 'Lodge' }}" class="w-full h-full object-cover">
+                    @elseif(!empty($settings['lodge_logo']) && file_exists(public_path($settings['lodge_logo'])))
+                        <img src="{{ asset($settings['lodge_logo']) }}" alt="{{ $settings['lodge_name'] ?? 'Lodge' }}" class="w-full h-full object-cover">
+                    @else
+                        <svg class="w-12 h-12 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                        </svg>
+                    @endif
                 </div>
                 <div>
                     <h1 class="text-3xl font-bold text-slate-900">{{ $settings['lodge_name'] ?? 'Milano Lodge' }}</h1>

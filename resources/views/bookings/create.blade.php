@@ -27,24 +27,39 @@
                         <h3 class="text-sm font-semibold text-slate-700 uppercase tracking-wider border-b border-slate-200 pb-2">Guest Information</h3>
                         
                         <div>
-                            <label for="guest_name" class="block text-sm font-medium text-slate-700 mb-1">Guest Name *</label>
-                            <input type="text" id="guest_name" name="guest_name" required 
+                            <label for="guest_id" class="block text-sm font-medium text-slate-700 mb-1">Select Existing Guest</label>
+                            <select id="guest_id" name="guest_id" 
                                 class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                                placeholder="e.g. John Doe">
+                                onchange="toggleGuestFields()">
+                                <option value="">Create new guest</option>
+                                @php $guests = DB::table('guests')->orderBy('first_name')->get(); @endphp
+                                @foreach($guests as $guest)
+                                    <option value="{{ $guest->id }}">{{ $guest->first_name }} {{ $guest->last_name }} ({{ $guest->vip_level }})</option>
+                                @endforeach
+                            </select>
                         </div>
                         
-                        <div>
-                            <label for="guest_email" class="block text-sm font-medium text-slate-700 mb-1">Email</label>
-                            <input type="email" id="guest_email" name="guest_email" 
-                                class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                                placeholder="e.g. guest@example.com">
-                        </div>
-                        
-                        <div>
-                            <label for="guest_phone" class="block text-sm font-medium text-slate-700 mb-1">Phone Number</label>
-                            <input type="tel" id="guest_phone" name="guest_phone" 
-                                class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                                placeholder="e.g. +254 712 345 678">
+                        <div id="new_guest_fields">
+                            <div>
+                                <label for="guest_name" class="block text-sm font-medium text-slate-700 mb-1">Guest Name *</label>
+                                <input type="text" id="guest_name" name="guest_name" required 
+                                    class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                                    placeholder="e.g. John Doe">
+                            </div>
+                            
+                            <div>
+                                <label for="guest_email" class="block text-sm font-medium text-slate-700 mb-1">Email</label>
+                                <input type="email" id="guest_email" name="guest_email" 
+                                    class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                                    placeholder="e.g. guest@example.com">
+                            </div>
+                            
+                            <div>
+                                <label for="guest_phone" class="block text-sm font-medium text-slate-700 mb-1">Phone Number</label>
+                                <input type="tel" id="guest_phone" name="guest_phone" 
+                                    class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                                    placeholder="e.g. +254 712 345 678">
+                            </div>
                         </div>
                     </div>
                     
@@ -53,22 +68,73 @@
                         <h3 class="text-sm font-semibold text-slate-700 uppercase tracking-wider border-b border-slate-200 pb-2">Booking Details</h3>
                         
                         <div>
-                            <label for="room_id" class="block text-sm font-medium text-slate-700 mb-1">
-                                Available Room * 
+                            <label for="reservation_type" class="block text-sm font-medium text-slate-700 mb-1">Reservation Type *</label>
+                            <select id="reservation_type" name="reservation_type" required
+                                class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                                onchange="toggleCorporateFields()">
+                                <option value="">Select reservation type</option>
+                                <option value="walk_in">Walk-in</option>
+                                <option value="advance">Advance Reservation</option>
+                                <option value="group">Group Booking</option>
+                                <option value="corporate">Corporate Booking</option>
+                                <option value="vip">VIP Guest</option>
+                            </select>
+                        </div>
+
+                        <div id="expiry_date_field" class="hidden">
+                            <label for="expiry_date" class="block text-sm font-medium text-slate-700 mb-1">Reservation Expiry Date</label>
+                            <input type="date" id="expiry_date" name="expiry_date" 
+                                class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
+                            <p class="text-xs text-slate-400 mt-1">Required for advance reservations</p>
+                        </div>
+
+                        <div id="corporate_fields" class="hidden space-y-3">
+                            <div>
+                                <label for="company_name" class="block text-sm font-medium text-slate-700 mb-1">Company Name</label>
+                                <input type="text" id="company_name" name="company_name" 
+                                    class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                                    placeholder="e.g. Acme Corporation">
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label for="tax_id" class="block text-sm font-medium text-slate-700 mb-1">Tax ID</label>
+                                    <input type="text" id="tax_id" name="tax_id" 
+                                        class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                                        placeholder="TIN">
+                                </div>
+                                <div>
+                                    <label for="credit_terms_days" class="block text-sm font-medium text-slate-700 mb-1">Credit Terms</label>
+                                    <select id="credit_terms_days" name="credit_terms_days" 
+                                        class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
+                                        <option value="">Select terms</option>
+                                        <option value="7">7 Days</option>
+                                        <option value="14">14 Days</option>
+                                        <option value="30">30 Days</option>
+                                        <option value="60">60 Days</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">
+                                Select Rooms * 
                                 <span class="text-xs text-emerald-600 font-normal">({{ count($rooms) }} available)</span>
                             </label>
-                            <select id="room_id" name="room_id" required
-                                class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
-                                <option value="">Select an available room</option>
+                            <div class="space-y-2 max-h-48 overflow-y-auto border border-slate-200 rounded-lg p-3">
                                 @forelse($rooms as $room)
-                                    <option value="{{ $room->id }}">
-                                        Room {{ $room->room_number }} - {{ $room->room_type_name ?? 'Standard' }} 
-                                        (${{ number_format($room->price ?? 0, 2) }}/night)
-                                    </option>
+                                    <label class="flex items-center gap-3 p-2 hover:bg-slate-50 rounded cursor-pointer">
+                                        <input type="checkbox" name="room_ids[]" value="{{ $room->id }}" 
+                                            class="w-4 h-4 text-amber-500 rounded focus:ring-amber-500">
+                                        <span class="text-sm">
+                                            Room {{ $room->room_number }} - {{ $room->room_type_name ?? 'Standard' }} 
+                                            ({{ format_money($room->price ?? 0) }}/night)
+                                        </span>
+                                    </label>
                                 @empty
-                                    <option value="" disabled>No available rooms</option>
+                                    <p class="text-sm text-rose-600">No rooms currently available.</p>
                                 @endforelse
-                            </select>
+                            </div>
                             @if(count($rooms) === 0)
                                 <p class="mt-1 text-xs text-rose-600">No rooms currently available. Please check room availability or free up rooms first.</p>
                             @endif
@@ -104,8 +170,8 @@
                         
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label for="adults" class="block text-sm font-medium text-slate-700 mb-1">Adults</label>
-                                <input type="number" id="adults" name="adults" min="1" value="1"
+                                <label for="adults" class="block text-sm font-medium text-slate-700 mb-1">Adults *</label>
+                                <input type="number" id="adults" name="adults" min="1" value="1" required
                                     class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
                             </div>
                             <div>
@@ -119,33 +185,41 @@
                 
                 <!-- Payment Information -->
                 <div class="space-y-4 pt-4 border-t border-slate-200">
-                    <h3 class="text-sm font-semibold text-slate-700 uppercase tracking-wider">Payment Information *</h3>
+                    <h3 class="text-sm font-semibold text-slate-700 uppercase tracking-wider">Payment Information</h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label for="payment_type" class="block text-sm font-medium text-slate-700 mb-1">Payment Method *</label>
-                            <select id="payment_type" name="payment_type" required
+                            <label for="payment_method" class="block text-sm font-medium text-slate-700 mb-1">Payment Method</label>
+                            <select id="payment_method" name="payment_method" 
                                 class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
                                 <option value="">Select payment method</option>
-                                <option value="cash">Cash Payment</option>
-                                <option value="crdb">CRDB Bank Transfer</option>
+                                <option value="cash">Cash</option>
+                                <option value="credit_card">Credit Card</option>
+                                <option value="bank_transfer">Bank Transfer</option>
+                                <option value="crdb">CRDB Bank</option>
+                                <option value="selcom">Selcom</option>
+                                <option value="dpo">DPO</option>
+                                <option value="gepg">GePG</option>
+                                <option value="mobile_money">Mobile Money</option>
+                                <option value="control_number">Control Number</option>
                             </select>
                         </div>
                         <div>
                             <label for="payment_reference" class="block text-sm font-medium text-slate-700 mb-1">Payment Reference</label>
                             <input type="text" id="payment_reference" name="payment_reference" 
                                 class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                                placeholder="e.g. CRDB-123456 or CASH-001">
-                            <p class="text-xs text-slate-400 mt-1">Required for CRDB payments. Optional for cash.</p>
+                                placeholder="e.g. Transaction ID or Reference">
+                            <p class="text-xs text-slate-400 mt-1">Required for non-cash payments</p>
                         </div>
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
-                            <label for="total_amount" class="block text-sm font-medium text-slate-700 mb-1">Total Amount *</label>
-                            <input type="number" id="total_amount" name="total_amount" required min="0" step="0.01"
+                            <label for="total_amount" class="block text-sm font-medium text-slate-700 mb-1">Total Amount</label>
+                            <input type="number" id="total_amount" name="total_amount" min="0" step="0.01"
                                 class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                                placeholder="0.00">
+                                placeholder="Auto-calculated">
+                            <p class="text-xs text-slate-400 mt-1">Leave empty to auto-calculate from rooms</p>
                         </div>
                         <div>
                             <label for="retainer_paid" class="block text-sm font-medium text-slate-700 mb-1">Amount Paid Now</label>
@@ -169,6 +243,14 @@
                         class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                         placeholder="Any special requests or notes..."></textarea>
                 </div>
+
+                <!-- Notes -->
+                <div class="pt-4 border-t border-slate-200">
+                    <label for="notes" class="block text-sm font-medium text-slate-700 mb-1">Internal Notes</label>
+                    <textarea id="notes" name="notes" rows="2"
+                        class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                        placeholder="Internal notes for staff..."></textarea>
+                </div>
                 
                 <!-- Actions -->
                 <div class="flex items-center justify-end gap-3 pt-4">
@@ -185,6 +267,40 @@
 </div>
 
 <script>
+    // Toggle guest fields based on selection
+    function toggleGuestFields() {
+        const guestId = document.getElementById('guest_id').value;
+        const newGuestFields = document.getElementById('new_guest_fields');
+        const guestName = document.getElementById('guest_name');
+        
+        if (guestId) {
+            newGuestFields.classList.add('hidden');
+            guestName.removeAttribute('required');
+        } else {
+            newGuestFields.classList.remove('hidden');
+            guestName.setAttribute('required', 'required');
+        }
+    }
+
+    // Toggle corporate fields based on reservation type
+    function toggleCorporateFields() {
+        const reservationType = document.getElementById('reservation_type').value;
+        const corporateFields = document.getElementById('corporate_fields');
+        const expiryDateField = document.getElementById('expiry_date_field');
+        
+        if (reservationType === 'corporate') {
+            corporateFields.classList.remove('hidden');
+        } else {
+            corporateFields.classList.add('hidden');
+        }
+        
+        if (reservationType === 'advance') {
+            expiryDateField.classList.remove('hidden');
+        } else {
+            expiryDateField.classList.add('hidden');
+        }
+    }
+
     // Calculate balance automatically
     document.getElementById('total_amount').addEventListener('input', calculateBalance);
     document.getElementById('retainer_paid').addEventListener('input', calculateBalance);
@@ -192,8 +308,19 @@
     function calculateBalance() {
         const total = parseFloat(document.getElementById('total_amount').value) || 0;
         const retainer = parseFloat(document.getElementById('retainer_paid').value) || 0;
-        const balance = total - retainer;
+        const balance =Math.max(0, total - retainer);
         document.getElementById('balance_display').textContent = '$' + balance.toFixed(2);
     }
+
+    // Set minimum dates
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('check_in_date').setAttribute('min', today);
+    document.getElementById('check_out_date').setAttribute('min', today);
+    document.getElementById('expiry_date').setAttribute('min', today);
+
+    // Ensure check-out is after check-in
+    document.getElementById('check_in_date').addEventListener('change', function() {
+        document.getElementById('check_out_date').setAttribute('min', this.value);
+    });
 </script>
 @endsection

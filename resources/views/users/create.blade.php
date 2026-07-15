@@ -81,6 +81,7 @@
                                 <option value="admin">Administrator</option>
                                 <option value="manager">Manager</option>
                                 <option value="receptionist">Receptionist</option>
+                                <option value="chef">Chef</option>
                                 <option value="staff">Staff</option>
                             </select>
                         </div>

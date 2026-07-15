@@ -114,6 +114,24 @@ return [
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
         ],
 
+        'iptv' => [
+            'driver' => 'mysql',
+            'host' => env('IPTV_DB_HOST', env('DB_HOST', '127.0.0.1')),
+            'port' => env('IPTV_DB_PORT', env('DB_PORT', '3306')),
+            'database' => env('IPTV_DB_DATABASE', 'iptv'),
+            'username' => env('IPTV_DB_USERNAME', env('DB_USERNAME', 'root')),
+            'password' => env('IPTV_DB_PASSWORD', env('DB_PASSWORD', '')),
+            'charset' => env('DB_CHARSET', 'utf8mb4'),
+            'collation' => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                Mysql::ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+
     ],
 
     /*

@@ -11,19 +11,13 @@
     @if(file_exists(public_path('build/manifest.json')))
         @vite(['resources/css/app.css'])
     @else
-        <script src="https://cdn.tailwindcss.com"></script>
-        <script>
-            tailwind.config = {
-                theme: {
-                    extend: {}
-                }
-            }
-        </script>
+        <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     @endif
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Inter via system font stack — no network required */
+        body { font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
+    </style>
 </head>
 <body class="font-sans antialiased bg-slate-100">
     <div id="app" class="min-h-screen flex flex-col">

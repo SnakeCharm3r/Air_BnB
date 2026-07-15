@@ -7,11 +7,19 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoles;
+
+    protected $guard_name = 'web';
+
+    public function guardName(): string
+    {
+        return 'web';
+    }
 
     protected $fillable = [
         'name',
@@ -44,6 +52,36 @@ class User extends Authenticatable
     public function tokens()
     {
         return $this->hasMany(ApiToken::class);
+    }
+
+    public function tenant()
+    {
+        return $this->belongsTo(Tenant::class, 'tenant_id');
+    }
+
+    public function createdBookings()
+    {
+        return $this->hasMany(Booking::class, 'created_by');
+    }
+
+    public function postedCharges()
+    {
+        return $this->hasMany(BookingCharge::class, 'posted_by');
+    }
+
+    public function approvedPayments()
+    {
+        return $this->hasMany(Payment::class, 'approved_by');
+    }
+
+    public function issuedInvoices()
+    {
+        return $this->hasMany(Invoice::class, 'issued_by');
+    }
+
+    public function closedFolios()
+    {
+        return $this->hasMany(GuestFolio::class, 'closed_by');
     }
 
     /**
@@ -108,7 +146,37 @@ class User extends Authenticatable
         if (!$this->last_login_at) {
             return false;
         }
-        
+
         return $this->last_login_at->diffInMinutes(Carbon::now()) < 15;
+    }
+
+    public function hasLegacyRole(string $role): bool
+    {
+        return strtolower($this->role ?? '') === strtolower($role);
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->hasLegacyRole('admin') || $this->hasLegacyRole('owner');
+    }
+
+    public function isManager(): bool
+    {
+        return $this->hasLegacyRole('manager') || $this->isAdmin();
+    }
+
+    public function isReceptionist(): bool
+    {
+        return $this->hasLegacyRole('receptionist') || $this->isManager();
+    }
+
+    public function isChef(): bool
+    {
+        return $this->hasLegacyRole('chef') || $this->isManager();
+    }
+
+    public function isAdminOrManager(): bool
+    {
+        return $this->isAdmin() || $this->isManager();
     }
 }

@@ -54,6 +54,7 @@ class SettingController extends Controller
                 'contact_email' => 'nullable|email',
                 'contact_phone' => 'nullable|string|max:20',
                 'contact_address' => 'nullable|string',
+                'currency' => 'nullable|string|max:10',
                 'owner_email' => 'nullable|email',
                 'max_login_attempts' => 'nullable|integer|min:1|max:10',
                 'lockout_duration' => 'nullable|integer|min:1|max:1440',

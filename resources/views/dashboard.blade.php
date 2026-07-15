@@ -45,23 +45,10 @@
                     </svg>
                 </div>
             </div>
-            <p class="text-xs text-slate-400 mt-3">Arriving guests</p>
-        </div>
-
-        <!-- Today's Check-outs -->
-        <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm text-slate-500">Today's Check-outs</p>
-                    <p class="text-2xl font-bold text-slate-800 mt-1">{{ $stats['todayCheckOuts'] }}</p>
-                </div>
-                <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
-                    <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4 4m0 0l-4 4m4-4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                    </svg>
-                </div>
+            <div class="mt-3 flex items-center gap-2">
+                <span class="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full">{{ $stats['currentGuests'] }} in-house</span>
+                <span class="text-xs px-2 py-1 bg-amber-100 text-amber-700 rounded-full">{{ $stats['todayCheckOuts'] }} departing</span>
             </div>
-            <p class="text-xs text-slate-400 mt-3">Departing guests</p>
         </div>
 
         <!-- Month Revenue -->
@@ -69,7 +56,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-slate-500">Month Revenue</p>
-                    <p class="text-2xl font-bold text-slate-800 mt-1">${{ number_format($stats['monthRevenue'], 2) }}</p>
+                    <p class="text-2xl font-bold text-slate-800 mt-1">{{ format_money($stats['monthRevenue']) }}</p>
                 </div>
                 <div class="w-12 h-12 bg-violet-100 rounded-xl flex items-center justify-center">
                     <svg class="w-6 h-6 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -77,7 +64,39 @@
                     </svg>
                 </div>
             </div>
-            <p class="text-xs text-slate-400 mt-3">This month</p>
+            <div class="mt-3 flex items-center gap-1.5">
+                @if($stats['revenueChange'] !== null)
+                    @if($stats['revenueChange'] >= 0)
+                        <span class="text-xs px-2 py-1 bg-emerald-100 text-emerald-700 rounded-full">↑ {{ $stats['revenueChange'] }}% vs last month</span>
+                    @else
+                        <span class="text-xs px-2 py-1 bg-rose-100 text-rose-700 rounded-full">↓ {{ abs($stats['revenueChange']) }}% vs last month</span>
+                    @endif
+                @else
+                    <span class="text-xs text-slate-400">Payments collected {{ now()->format('M Y') }}</span>
+                @endif
+            </div>
+        </div>
+
+        <!-- Outstanding Balance -->
+        <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-slate-500">Outstanding Balance</p>
+                    <p class="text-2xl font-bold {{ $stats['outstandingBalance'] > 0 ? 'text-rose-600' : 'text-emerald-600' }} mt-1">{{ format_money($stats['outstandingBalance']) }}</p>
+                </div>
+                <div class="w-12 h-12 bg-rose-100 rounded-xl flex items-center justify-center">
+                    <svg class="w-6 h-6 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="mt-3 flex items-center gap-2">
+                @if($stats['unpaidInvoices'] > 0)
+                    <span class="text-xs px-2 py-1 bg-amber-100 text-amber-700 rounded-full">{{ $stats['unpaidInvoices'] }} unpaid invoice{{ $stats['unpaidInvoices'] > 1 ? 's' : '' }}</span>
+                @else
+                    <span class="text-xs px-2 py-1 bg-emerald-100 text-emerald-700 rounded-full">All invoices settled</span>
+                @endif
+            </div>
         </div>
     </div>
 
@@ -100,7 +119,7 @@
         <!-- Quick Stats -->
         <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-4">
             <h3 class="font-semibold text-slate-800">Quick Overview</h3>
-            
+
             <div class="flex items-center justify-between py-2 border-b border-slate-100">
                 <div class="flex items-center gap-3">
                     <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -115,6 +134,30 @@
 
             <div class="flex items-center justify-between py-2 border-b border-slate-100">
                 <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <span class="text-sm text-slate-600">Pending Bookings</span>
+                </div>
+                <span class="font-semibold text-slate-800">{{ $stats['pendingBookings'] }}</span>
+            </div>
+
+            <div class="flex items-center justify-between py-2 border-b border-slate-100">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-violet-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-4 h-4 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                    </div>
+                    <span class="text-sm text-slate-600">New Bookings ({{ now()->format('M') }})</span>
+                </div>
+                <span class="font-semibold text-slate-800">{{ $stats['newBookingsThisMonth'] }}</span>
+            </div>
+
+            <div class="flex items-center justify-between py-2">
+                <div class="flex items-center gap-3">
                     <div class="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center">
                         <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
@@ -122,19 +165,7 @@
                     </div>
                     <span class="text-sm text-slate-600">Low Stock Items</span>
                 </div>
-                <span class="font-semibold text-slate-800">{{ $stats['lowStockItems'] }}</span>
-            </div>
-
-            <div class="flex items-center justify-between py-2">
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 bg-rose-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-4 h-4 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
-                        </svg>
-                    </div>
-                    <span class="text-sm text-slate-600">Pending Tasks</span>
-                </div>
-                <span class="font-semibold text-slate-800">{{ $stats['pendingTasks'] }}</span>
+                <span class="font-semibold {{ $stats['lowStockItems'] > 0 ? 'text-rose-600' : 'text-slate-800' }}">{{ $stats['lowStockItems'] }}</span>
             </div>
         </div>
     </div>
@@ -180,7 +211,7 @@
                                     {{ str_replace('_', ' ', $booking->status) }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 text-right text-sm font-medium text-slate-800">${{ number_format($booking->total_amount, 2) }}</td>
+                            <td class="px-6 py-4 text-right text-sm font-medium text-slate-800">{{ format_money($booking->total_amount) }}</td>
                         </tr>
                     @empty
                         <tr>

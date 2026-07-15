@@ -11,9 +11,11 @@
     @if(file_exists(public_path('build/manifest.json')))
         @vite(['resources/css/app.css'])
     @else
-        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     @endif
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
+    </style>
 </head>
 <body class="font-sans antialiased bg-slate-100 min-h-screen flex items-center justify-center p-4">
     <div class="w-full max-w-md">
@@ -75,10 +77,36 @@
                 </button>
             </form>
 
-            <div class="mt-6 pt-6 border-t border-slate-100 text-center">
-                <p class="text-sm text-slate-500">
-                    Default: <span class="font-medium">owner@lodge.com</span> / <span class="font-medium">password123</span>
-                </p>
+            <!-- Test Credentials -->
+            <div class="mt-6 pt-6 border-t border-slate-100">
+                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3 text-center">Test Accounts — click to fill</p>
+                <div class="space-y-2">
+                    @php
+                        $testUsers = \App\Models\User::select('name','email','role','full_name')
+                            ->orderByRaw("FIELD(role,'admin','owner','manager','receptionist','chef')")
+                            ->get();
+                        $roleColors = [
+                            'admin'        => 'bg-purple-50 border-purple-200 hover:bg-purple-100 text-purple-700',
+                            'owner'        => 'bg-purple-50 border-purple-200 hover:bg-purple-100 text-purple-700',
+                            'manager'      => 'bg-blue-50 border-blue-200 hover:bg-blue-100 text-blue-700',
+                            'receptionist' => 'bg-emerald-50 border-emerald-200 hover:bg-emerald-100 text-emerald-700',
+                            'chef'         => 'bg-orange-50 border-orange-200 hover:bg-orange-100 text-orange-700',
+                        ];
+                    @endphp
+                    @foreach($testUsers as $u)
+                        @php $color = $roleColors[$u->role] ?? 'bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-700'; @endphp
+                        <button type="button"
+                            onclick="fillCredentials('{{ $u->email }}')"
+                            class="w-full flex items-center justify-between px-3 py-2 rounded-lg border {{ $color }} text-left transition cursor-pointer">
+                            <div>
+                                <span class="text-xs font-semibold block">{{ $u->full_name ?? $u->name }}</span>
+                                <span class="text-xs opacity-75">{{ $u->email }}</span>
+                            </div>
+                            <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-white/60 capitalize">{{ $u->role }}</span>
+                        </button>
+                    @endforeach
+                </div>
+                <p class="text-xs text-slate-400 text-center mt-3">Password for all accounts: <span class="font-medium text-slate-600">password123</span></p>
             </div>
         </div>
 
@@ -88,6 +116,13 @@
     </div>
 
     <script>
+        function fillCredentials(email) {
+            document.querySelector('input[name="email"]').value = email;
+            document.querySelector('input[name="password"]').value = 'password123';
+            document.querySelector('input[name="password"]').type = 'text';
+            document.getElementById('eye-icon').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>';
+        }
+
         function togglePassword() {
             const input = document.getElementById('password');
             const icon = document.getElementById('eye-icon');

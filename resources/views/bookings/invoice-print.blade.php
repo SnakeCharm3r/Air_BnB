@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invoice #{{ $invoice->invoice_number ?? 'N/A' }}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <style>body { font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif; }</style>
     <style>
         @media print {
             body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -127,8 +128,8 @@
                         <p class="text-sm text-slate-500">{{ $invoice->nights ?? 1 }} night(s) accommodation</p>
                     </td>
                     <td class="px-4 py-4 text-center">{{ $invoice->nights ?? 1 }}</td>
-                    <td class="px-4 py-4 text-right">${{ number_format($invoice->room_rate ?? 0, 2) }}</td>
-                    <td class="px-4 py-4 text-right font-bold">${{ number_format($invoice->subtotal ?? 0, 2) }}</td>
+                    <td class="px-4 py-4 text-right">{{ format_money($invoice->room_rate ?? 0) }}</td>
+                    <td class="px-4 py-4 text-right font-bold">{{ format_money($invoice->subtotal ?? 0) }}</td>
                 </tr>
             </tbody>
         </table>
@@ -138,23 +139,19 @@
             <div class="w-1/2">
                 <div class="flex justify-between py-2 border-b border-slate-200">
                     <span class="text-slate-600">Subtotal</span>
-                    <span class="font-semibold">${{ number_format($invoice->subtotal ?? 0, 2) }}</span>
-                </div>
-                <div class="flex justify-between py-2 border-b border-slate-200">
-                    <span class="text-slate-600">Tax (12%)</span>
-                    <span class="font-semibold">${{ number_format($invoice->tax_amount ?? 0, 2) }}</span>
+                    <span class="font-semibold">{{ format_money($invoice->subtotal ?? 0) }}</span>
                 </div>
                 <div class="flex justify-between py-3 border-b-2 border-slate-800">
                     <span class="text-lg font-bold">Total</span>
-                    <span class="text-lg font-bold">${{ number_format($invoice->total_amount ?? 0, 2) }}</span>
+                    <span class="text-lg font-bold">{{ format_money($invoice->total_amount ?? 0) }}</span>
                 </div>
                 <div class="flex justify-between py-2 text-emerald-600">
                     <span>Amount Paid</span>
-                    <span class="font-semibold">${{ number_format($invoice->amount_paid ?? 0, 2) }}</span>
+                    <span class="font-semibold">{{ format_money($invoice->amount_paid ?? 0) }}</span>
                 </div>
                 <div class="flex justify-between py-3 bg-slate-100 px-4 rounded-lg mt-2">
                     <span class="font-bold {{ ($invoice->balance_due ?? 0) > 0 ? 'text-rose-600' : 'text-emerald-600' }}">Balance Due</span>
-                    <span class="font-bold {{ ($invoice->balance_due ?? 0) > 0 ? 'text-rose-600' : 'text-emerald-600' }}">${{ number_format($invoice->balance_due ?? 0, 2) }}</span>
+                    <span class="font-bold {{ ($invoice->balance_due ?? 0) > 0 ? 'text-rose-600' : 'text-emerald-600' }}">{{ format_money($invoice->balance_due ?? 0) }}</span>
                 </div>
             </div>
         </div>

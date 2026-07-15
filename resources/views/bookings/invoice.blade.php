@@ -101,7 +101,6 @@
                         <th class="px-4 py-3 text-left text-sm font-medium">Item Description</th>
                         <th class="px-4 py-3 text-center text-sm font-medium">Qty</th>
                         <th class="px-4 py-3 text-right text-sm font-medium">Rate</th>
-                        <th class="px-4 py-3 text-right text-sm font-medium">Tax</th>
                         <th class="px-4 py-3 text-right text-sm font-medium">Amount</th>
                     </tr>
                 </thead>
@@ -113,9 +112,8 @@
                             <p class="text-xs text-slate-400">{{ date('M d, Y', strtotime($booking->check_in_date)) }} to {{ date('M d, Y', strtotime($booking->check_out_date)) }}</p>
                         </td>
                         <td class="px-4 py-4 text-center">{{ $invoice->nights ?? 1 }}</td>
-                        <td class="px-4 py-4 text-right">${{ number_format($invoice->room_rate ?? 0, 2) }}</td>
-                        <td class="px-4 py-4 text-right">${{ number_format($invoice->tax_amount ?? 0, 2) }}</td>
-                        <td class="px-4 py-4 text-right font-medium">${{ number_format($invoice->subtotal ?? 0, 2) }}</td>
+                        <td class="px-4 py-4 text-right">{{ format_money($invoice->room_rate ?? 0) }}</td>
+                        <td class="px-4 py-4 text-right font-medium">{{ format_money($invoice->subtotal ?? 0) }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -126,26 +124,22 @@
                     <div class="space-y-2">
                         <div class="flex justify-between text-sm py-1">
                             <span class="text-slate-600">Sub Total</span>
-                            <span class="font-medium">${{ number_format($invoice->subtotal ?? 0, 2) }}</span>
-                        </div>
-                        <div class="flex justify-between text-sm py-1">
-                            <span class="text-slate-600">Tax (12%)</span>
-                            <span class="font-medium">${{ number_format($invoice->tax_amount ?? 0, 2) }}</span>
+                            <span class="font-medium">{{ format_money($invoice->subtotal ?? 0) }}</span>
                         </div>
                         <div class="flex justify-between text-lg font-bold border-t-2 border-slate-800 pt-3 mt-2">
                             <span>TOTAL</span>
-                            <span class="bg-slate-100 px-3 py-1 rounded">${{ number_format($invoice->total_amount ?? 0, 2) }}</span>
+                            <span class="bg-slate-100 px-3 py-1 rounded">{{ format_money($invoice->total_amount ?? 0) }}</span>
                         </div>
                         @if(($invoice->amount_paid ?? 0) > 0)
                         <div class="flex justify-between text-sm text-emerald-600 py-1">
                             <span>Amount Paid</span>
-                            <span class="font-medium">${{ number_format($invoice->amount_paid, 2) }}</span>
+                            <span class="font-medium">{{ format_money($invoice->amount_paid) }}</span>
                         </div>
                         @endif
                         @if(($invoice->balance_due ?? 0) > 0)
                         <div class="flex justify-between text-base font-bold text-rose-600 py-1">
                             <span>Balance Due</span>
-                            <span>${{ number_format($invoice->balance_due, 2) }}</span>
+                            <span>{{ format_money($invoice->balance_due) }}</span>
                         </div>
                         @endif
                     </div>

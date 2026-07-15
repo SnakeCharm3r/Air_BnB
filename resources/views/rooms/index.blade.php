@@ -11,12 +11,16 @@
             <p class="text-sm text-slate-500">Manage rooms and their status</p>
         </div>
         <div class="flex items-center gap-3">
+            @can('room-types.view')
             <a href="{{ route('room-types.index') }}" class="px-4 py-2 border border-slate-300 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50 transition">
                 Manage Room Types
             </a>
+            @endcan
+            @can('rooms.create')
             <button onclick="toggleAddRoomModal()" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-sm font-medium transition shadow-sm">
                 + Add Room
             </button>
+            @endcan
         </div>
     </div>
 
@@ -101,7 +105,7 @@
                         class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
                         <option value="">Select room type</option>
                         @foreach($roomTypes as $type)
-                            <option value="{{ $type->id }}">{{ $type->name }} - {{ $type->currency ?? 'KSH' }} {{ number_format($type->base_price) }} / {{ $type->capacity }} person(s)</option>
+                            <option value="{{ $type->id }}">{{ $type->name }} - {{ format_money($type->base_price) }} / {{ $type->capacity }} person(s)</option>
                         @endforeach
                     </select>
                 </div>

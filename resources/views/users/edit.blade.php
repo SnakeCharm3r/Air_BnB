@@ -89,6 +89,7 @@
                                 <option value="admin" {{ $user->role === 'admin' ? 'selected' : '' }}>Administrator</option>
                                 <option value="manager" {{ $user->role === 'manager' ? 'selected' : '' }}>Manager</option>
                                 <option value="receptionist" {{ $user->role === 'receptionist' ? 'selected' : '' }}>Receptionist</option>
+                                <option value="chef" {{ $user->role === 'chef' ? 'selected' : '' }}>Chef</option>
                                 <option value="staff" {{ $user->role === 'staff' ? 'selected' : '' }}>Staff</option>
                             </select>
                         </div>

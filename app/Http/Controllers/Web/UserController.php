@@ -47,7 +47,9 @@ class UserController extends Controller
         $data['password'] = Hash::make($data['password']);
         $data['is_active'] = true;
 
-        User::create($data);
+        $user = User::create($data);
+        $spatiaRole = $data['role'] === 'owner' ? 'admin' : $data['role'];
+        $user->syncRoles([$spatiaRole]);
 
         return redirect()->route('users.index')->with('success', 'User created successfully');
     }
@@ -84,6 +86,10 @@ class UserController extends Controller
         }
 
         $user->update($data);
+
+        if (isset($data['role'])) {
+            $user->syncRoles([$data['role']]);
+        }
 
         return redirect()->route('users.index')->with('success', 'User updated successfully');
     }

@@ -57,7 +57,7 @@
                                 @foreach($rooms as $room)
                                     <option value="{{ $room->id }}" {{ $booking->room_id == $room->id ? 'selected' : '' }}>
                                         Room {{ $room->room_number }} - {{ $room->room_type_name ?? 'Standard' }} 
-                                        (${{ number_format($room->price ?? 0, 2) }}/night)
+                                        ({{ format_money($room->price ?? 0) }}/night)
                                         @if($booking->room_id == $room->id)
                                             [CURRENT]
                                         @elseif($room->status === 'available')
@@ -154,7 +154,7 @@
                         <div>
                             <label class="block text-sm font-medium text-slate-500 mb-1">Current Balance</label>
                             <div class="px-3 py-2 bg-slate-100 rounded-lg text-sm font-medium {{ $booking->balance_due > 0 ? 'text-rose-600' : 'text-emerald-600' }}">
-                                ${{ number_format($booking->balance_due ?? 0, 2) }}
+                                {{ format_money($booking->balance_due ?? 0) }}
                             </div>
                         </div>
                     </div>

@@ -73,7 +73,7 @@
                     <div class="space-y-3">
                         <div>
                             <label class="block text-xs font-medium text-slate-500 mb-1">Base Price</label>
-                            <p class="text-sm font-semibold text-emerald-600">{{ $room->currency ?? 'KSH' }} {{ number_format($room->base_price) }}</p>
+                            <p class="text-sm font-semibold text-emerald-600">{{ format_money($room->base_price) }}</p>
                         </div>
                         
                         <div>
@@ -177,14 +177,18 @@
             </div>
 
             <!-- Actions -->
+            @canany(['rooms.edit'])
             <div class="mt-6 flex items-center gap-3 pt-6 border-t border-slate-200">
+                @can('rooms.edit')
                 <button onclick="toggleEditRoomModal()" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-sm font-medium transition shadow-sm">
                     Edit Room
                 </button>
                 <button onclick="toggleStatusModal()" class="px-4 py-2 border border-slate-300 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50 transition">
                     Change Status
                 </button>
+                @endcan
             </div>
+            @endcanany
         </div>
     </div>
 </div>
@@ -235,7 +239,7 @@
                         class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
                         @php $roomTypes = DB::table('room_types')->get(); @endphp
                         @foreach($roomTypes as $type)
-                            <option value="{{ $type->id }}" {{ $type->id == $room->room_type_id ? 'selected' : '' }}>{{ $type->name }} - {{ $type->currency ?? 'KSH' }} {{ number_format($type->base_price) }}</option>
+                            <option value="{{ $type->id }}" {{ $type->id == $room->room_type_id ? 'selected' : '' }}>{{ $type->name }} - {{ format_money($type->base_price) }}</option>
                         @endforeach
                     </select>
                 </div>

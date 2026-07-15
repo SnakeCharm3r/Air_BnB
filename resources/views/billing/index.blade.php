@@ -29,7 +29,7 @@
                 </div>
                 <div>
                     <p class="text-sm text-slate-500">Outstanding Balance</p>
-                    <p class="text-2xl font-bold text-slate-800">${{ number_format($totalOutstanding, 2) }}</p>
+                    <p class="text-2xl font-bold text-slate-800">{{ format_money($totalOutstanding) }}</p>
                 </div>
             </div>
         </div>
@@ -42,10 +42,37 @@
                 </div>
                 <div>
                     <p class="text-sm text-slate-500">Today's Payments</p>
-                    <p class="text-2xl font-bold text-slate-800">${{ number_format($todayPayments, 2) }}</p>
+                    <p class="text-2xl font-bold text-slate-800">{{ format_money($todayPayments) }}</p>
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+        <form method="GET" action="{{ route('billing.index') }}" class="flex flex-wrap items-end gap-4">
+            <div class="flex-1 min-w-[160px]">
+                <label for="date" class="block text-xs font-medium text-slate-500 uppercase mb-1">Date</label>
+                <input type="date" id="date" name="date" value="{{ $filters['date'] ?? '' }}" class="w-full rounded-lg border-slate-300 text-sm focus:border-blue-500 focus:ring-blue-500">
+            </div>
+            <div class="flex-1 min-w-[160px]">
+                <label for="month" class="block text-xs font-medium text-slate-500 uppercase mb-1">Month</label>
+                <input type="month" id="month" name="month" value="{{ $filters['month'] ?? '' }}" class="w-full rounded-lg border-slate-300 text-sm focus:border-blue-500 focus:ring-blue-500">
+            </div>
+            <div class="w-32">
+                <label for="per_page" class="block text-xs font-medium text-slate-500 uppercase mb-1">Show</label>
+                <select id="per_page" name="per_page" onchange="this.form.submit()" class="w-full rounded-lg border-slate-300 text-sm focus:border-blue-500 focus:ring-blue-500">
+                    @foreach([10, 25, 50, 100] as $size)
+                        <option value="{{ $size }}" {{ ($filters['perPage'] ?? 25) == $size ? 'selected' : '' }}>{{ $size }} entries</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="flex gap-2">
+                <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition">Filter</button>
+                <a href="{{ route('billing.index') }}" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-sm font-medium transition">Clear</a>
+                <a href="{{ route('billing.export', request()->only(['date', 'month'])) }}" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-medium transition">Export Excel</a>
+            </div>
+        </form>
     </div>
 
     <!-- Pending Payment Confirmations -->
@@ -79,7 +106,7 @@
                             <td class="px-6 py-4 text-sm text-slate-600">{{ $booking->guest_name }}</td>
                             <td class="px-6 py-4 text-sm text-slate-600">{{ $booking->room_number }}</td>
                             <td class="px-6 py-4 text-sm text-slate-600">{{ date('M d, Y', strtotime($booking->check_in_date)) }}</td>
-                            <td class="px-6 py-4 text-right text-sm font-medium text-slate-800">${{ number_format($booking->total_amount, 2) }}</td>
+                            <td class="px-6 py-4 text-right text-sm font-medium text-slate-800">{{ format_money($booking->total_amount) }}</td>
                             <td class="px-6 py-4 text-center">
                                 <a href="{{ route('bookings.show', $booking->id) }}" class="inline-flex items-center gap-1 px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-sm font-medium transition">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -126,9 +153,9 @@
                                     {{ ucfirst(str_replace('_', ' ', $bill->status)) }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 text-right text-sm font-medium text-slate-800">${{ number_format($bill->total_amount, 2) }}</td>
-                            <td class="px-6 py-4 text-right text-sm text-emerald-600">${{ number_format($bill->retainer_paid, 2) }}</td>
-                            <td class="px-6 py-4 text-right text-sm font-bold text-rose-600">${{ number_format($bill->balance_due, 2) }}</td>
+                            <td class="px-6 py-4 text-right text-sm font-medium text-slate-800">{{ format_money($bill->total_amount) }}</td>
+                            <td class="px-6 py-4 text-right text-sm text-emerald-600">{{ format_money($bill->retainer_paid) }}</td>
+                            <td class="px-6 py-4 text-right text-sm font-bold text-rose-600">{{ format_money($bill->balance_due) }}</td>
                             <td class="px-6 py-4 text-center">
                                 <a href="{{ route('billing.show', $bill->id) }}" class="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium transition">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -153,6 +180,9 @@
                 </tbody>
             </table>
         </div>
+        @if($pendingBills->hasPages())
+            <div class="p-4 border-t border-slate-200">{{ $pendingBills->links() }}</div>
+        @endif
     </div>
 </div>
 @endsection

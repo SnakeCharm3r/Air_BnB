@@ -82,6 +82,12 @@
                         <label class="block text-xs font-medium text-slate-600 mb-1">Contact Address</label>
                         <input type="text" name="contact_address" value="{{ $settings->contact_address }}" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
                     </div>
+
+                    <!-- Currency -->
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 mb-1">Currency</label>
+                        <input type="text" name="currency" value="{{ $settings->currency ?? 'TSH' }}" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    </div>
                 </div>
             </div>
 

@@ -55,7 +55,7 @@
                 </div>
                 <div>
                     <p class="text-sm text-slate-500">Outstanding Debt</p>
-                    <p class="text-2xl font-bold text-rose-600">${{ number_format($totalOutstanding ?? 0, 2) }}</p>
+                    <p class="text-2xl font-bold text-rose-600">{{ format_money($totalOutstanding ?? 0) }}</p>
                 </div>
             </div>
         </div>
@@ -103,7 +103,7 @@
                             <td class="px-6 py-4 text-sm text-slate-600">
                                 {{ $room->check_out_date ? date('M d, Y', strtotime($room->check_out_date)) : '-' }}
                             </td>
-                            <td class="px-6 py-4 text-right text-sm font-medium">${{ number_format($room->base_price ?? 0, 2) }}</td>
+                            <td class="px-6 py-4 text-right text-sm font-medium">{{ format_money($room->base_price ?? 0) }}</td>
                         </tr>
                     @empty
                         <tr>
@@ -134,7 +134,7 @@
                         @forelse($dailySales ?? [] as $sale)
                             <tr class="hover:bg-slate-50">
                                 <td class="px-4 py-3 text-sm">{{ date('M d, Y', strtotime($sale->date)) }}</td>
-                                <td class="px-4 py-3 text-right text-sm font-medium text-emerald-600">${{ number_format($sale->total, 2) }}</td>
+                                <td class="px-4 py-3 text-right text-sm font-medium text-emerald-600">{{ format_money($sale->total) }}</td>
                             </tr>
                         @empty
                             <tr>
@@ -163,7 +163,7 @@
                         @forelse($weeklySales ?? [] as $sale)
                             <tr class="hover:bg-slate-50">
                                 <td class="px-4 py-3 text-sm">{{ date('M d', strtotime($sale->week_start)) }} - {{ date('M d, Y', strtotime($sale->week_end)) }}</td>
-                                <td class="px-4 py-3 text-right text-sm font-medium text-emerald-600">${{ number_format($sale->total, 2) }}</td>
+                                <td class="px-4 py-3 text-right text-sm font-medium text-emerald-600">{{ format_money($sale->total) }}</td>
                             </tr>
                         @empty
                             <tr>
@@ -192,7 +192,7 @@
                         @forelse($monthlySales ?? [] as $sale)
                             <tr class="hover:bg-slate-50">
                                 <td class="px-4 py-3 text-sm">{{ date('F Y', strtotime($sale->month . '-01')) }}</td>
-                                <td class="px-4 py-3 text-right text-sm font-medium text-emerald-600">${{ number_format($sale->total, 2) }}</td>
+                                <td class="px-4 py-3 text-right text-sm font-medium text-emerald-600">{{ format_money($sale->total) }}</td>
                             </tr>
                         @empty
                             <tr>
@@ -221,7 +221,7 @@
                         @forelse($yearlySales ?? [] as $sale)
                             <tr class="hover:bg-slate-50">
                                 <td class="px-4 py-3 text-sm">{{ $sale->year }}</td>
-                                <td class="px-4 py-3 text-right text-sm font-medium text-emerald-600">${{ number_format($sale->total, 2) }}</td>
+                                <td class="px-4 py-3 text-right text-sm font-medium text-emerald-600">{{ format_money($sale->total) }}</td>
                             </tr>
                         @empty
                             <tr>
@@ -240,12 +240,12 @@
             <div class="flex items-center justify-between">
                 <div>
                     <h3 class="text-lg font-semibold text-slate-800">Outstanding Debt</h3>
-                    <p class="text-sm text-slate-500">Pending, confirmed, and checked-in bookings with balance due</p>
+                    <p class="text-sm text-slate-500">Open folios with balance due, linked to the latest invoice</p>
                 </div>
                 <div class="flex items-center gap-4">
                     <div class="text-right">
-                        <p class="text-xs text-slate-500">Pending: <span class="font-medium text-amber-600">${{ number_format($totalPendingInvoices ?? 0, 2) }}</span></p>
-                        <p class="text-xs text-slate-500">Confirmed: <span class="font-medium text-blue-600">${{ number_format($totalConfirmedInvoices ?? 0, 2) }}</span></p>
+                        <p class="text-xs text-slate-500">Pending: <span class="font-medium text-amber-600">{{ format_money($totalPendingInvoices ?? 0) }}</span></p>
+                        <p class="text-xs text-slate-500">Confirmed: <span class="font-medium text-blue-600">{{ format_money($totalConfirmedInvoices ?? 0) }}</span></p>
                     </div>
                 </div>
             </div>
@@ -259,8 +259,9 @@
                         <th class="px-6 py-3 text-center text-xs font-medium text-slate-500 uppercase">Status</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Room</th>
                         <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase">Total</th>
-                        <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase">Paid</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase">Amount Paid</th>
                         <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase">Balance Due</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-slate-500 uppercase">Invoice</th>
                         <th class="px-6 py-3 text-center text-xs font-medium text-slate-500 uppercase">Action</th>
                     </tr>
                 </thead>
@@ -283,9 +284,19 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 text-sm text-slate-600">{{ $debt->room_number }}</td>
-                            <td class="px-6 py-4 text-right text-sm font-medium">${{ number_format($debt->total_amount, 2) }}</td>
-                            <td class="px-6 py-4 text-right text-sm text-emerald-600">${{ number_format($debt->retainer_paid, 2) }}</td>
-                            <td class="px-6 py-4 text-right text-sm font-bold text-rose-600">${{ number_format($debt->balance_due, 2) }}</td>
+                            <td class="px-6 py-4 text-right text-sm font-medium">{{ format_money($debt->total_amount) }}</td>
+                            <td class="px-6 py-4 text-right text-sm text-emerald-600">{{ format_money($debt->retainer_paid) }}</td>
+                            <td class="px-6 py-4 text-right text-sm font-bold text-rose-600">{{ format_money($debt->balance_due) }}</td>
+                            <td class="px-6 py-4 text-center">
+                                @if($debt->last_invoice_number)
+                                    <span class="px-2 py-1 text-xs font-medium rounded-full
+                                        {{ $debt->last_invoice_status === 'paid' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700' }}">
+                                        {{ $debt->last_invoice_number }}
+                                    </span>
+                                @else
+                                    <span class="text-xs text-slate-400">-</span>
+                                @endif
+                            </td>
                             <td class="px-6 py-4 text-center">
                                 <a href="{{ route('billing.show', $debt->id) }}" class="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium transition">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -297,7 +308,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="px-6 py-8 text-center text-slate-400">
+                            <td colspan="9" class="px-6 py-8 text-center text-slate-400">
                                 <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3">
                                     <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -311,7 +322,8 @@
                 <tfoot class="bg-slate-50 font-semibold">
                     <tr>
                         <td colspan="6" class="px-6 py-4 text-right">Total Outstanding:</td>
-                        <td class="px-6 py-4 text-right text-rose-600">${{ number_format($totalOutstanding ?? 0, 2) }}</td>
+                        <td class="px-6 py-4 text-right text-rose-600">{{ format_money($totalOutstanding ?? 0) }}</td>
+                        <td></td>
                         <td></td>
                     </tr>
                 </tfoot>

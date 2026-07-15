@@ -38,7 +38,7 @@
                             <span class="text-sm text-slate-600">{{ $type->description ?? '-' }}</span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="text-sm font-semibold text-emerald-600">{{ $type->currency ?? 'KSH' }} {{ $type->base_price }}</span>
+                            <span class="text-sm font-semibold text-emerald-600">{{ format_money($type->base_price) }}</span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="text-sm text-slate-600">{{ $type->capacity }} person(s)</span>
@@ -148,8 +148,8 @@
                         <label for="currency" class="block text-sm font-medium text-slate-700 mb-1">Currency</label>
                         <select id="currency" name="currency" required
                             class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
+                            <option value="TSH" selected>TSH (Tanzanian Shilling)</option>
                             <option value="KSH">KSH (Kenyan Shilling)</option>
-                            <option value="TSH">TSH (Tanzanian Shilling)</option>
                             <option value="UGX">UGX (Ugandan Shilling)</option>
                             <option value="RAND">RAND (South African Rand)</option>
                             <option value="USD">USD (US Dollar)</option>

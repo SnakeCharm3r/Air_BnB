@@ -14,6 +14,7 @@ class Setting extends Model
         'contact_email',
         'contact_phone',
         'contact_address',
+        'currency',
         'owner_email',
         'max_login_attempts',
         'lockout_duration',
@@ -36,6 +37,7 @@ class Setting extends Model
     {
         return static::firstOrCreate([], [
             'lodge_name' => 'LodgeOS',
+            'currency' => 'TSH',
             'max_login_attempts' => 3,
             'lockout_duration' => 30,
             'two_factor_auth' => false,

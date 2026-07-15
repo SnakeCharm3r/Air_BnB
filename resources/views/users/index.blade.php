@@ -11,9 +11,11 @@
             <h2 class="text-xl font-bold text-slate-800">System Users</h2>
             <p class="text-sm text-slate-500">Manage staff accounts and access permissions</p>
         </div>
+        @can('users.create')
         <a href="{{ route('users.create') }}" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-sm font-medium transition shadow-sm">
             + Add New User
         </a>
+        @endcan
     </div>
 
     <!-- Users Table -->
@@ -64,12 +66,15 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                         </svg>
                                     </a>
+                                    @can('users.edit')
                                     <a href="{{ route('users.edit', $user->id) }}" class="p-1.5 text-slate-400 hover:text-amber-600 transition" title="Edit">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                         </svg>
                                     </a>
+                                    @endcan
                                     @if($user->id !== auth()->id())
+                                        @can('users.edit')
                                         <form action="{{ route('users.toggle-status', $user->id) }}" method="POST" class="inline">
                                             @csrf
                                             <button type="submit" class="p-1.5 {{ $user->is_active ? 'text-emerald-400 hover:text-rose-600' : 'text-slate-400 hover:text-emerald-600' }} transition" title="{{ $user->is_active ? 'Deactivate' : 'Activate' }}">
@@ -84,6 +89,8 @@
                                                 @endif
                                             </button>
                                         </form>
+                                        @endcan
+                                        @can('users.delete')
                                         <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this user?');">
                                             @csrf
                                             @method('DELETE')
@@ -93,6 +100,7 @@
                                                 </svg>
                                             </button>
                                         </form>
+                                        @endcan
                                     @endif
                                 </div>
                             </td>

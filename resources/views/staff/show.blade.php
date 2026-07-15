@@ -1,4 +1,4 @@
-@extends('layouts.app')
+ @extends('layouts.app')
 
 @section('title', 'Staff Details - ' . $staff->full_name)
 @section('page-title', 'Staff Details')
@@ -78,7 +78,7 @@
                         
                         <div>
                             <label class="block text-xs font-medium text-slate-500 mb-1">Salary</label>
-                            <p class="text-sm text-slate-800">{{ $staff->salary ? number_format($staff->salary) : 'N/A' }}</p>
+                            <p class="text-sm text-slate-800">{{ $staff->salary ? format_money($staff->salary) : 'N/A' }}</p>
                         </div>
                         
                         <div>
